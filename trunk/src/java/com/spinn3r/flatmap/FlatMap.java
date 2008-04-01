@@ -18,7 +18,7 @@ import static com.spinn3r.flatmap.FlatMapWriter.*;
  * around this problem by simply storing a DataPointer object in as the value
  * and adding this as an indirection to the underlying value.
  */
-public class FlatMap<K,V> extends ReadOnlyMap implements Map {
+public class FlatMap<K,V> extends ReadOnlyMap {
 
     // 4 bytes for header
     // 4 bytes for count of items
@@ -139,7 +139,7 @@ public class FlatMap<K,V> extends ReadOnlyMap implements Map {
         
     }
 
-    public public int size() {
+    public int size() {
         return size;
     }
 
@@ -147,23 +147,58 @@ public class FlatMap<K,V> extends ReadOnlyMap implements Map {
         return size == 0;
     }
 
-    public boolean containsKey(Object key) {
+    public boolean containsKey(K key) {
         return get( key ) != null;
     }
 
     public boolean containsValue(Object value) {
-        throw new RuntimeException( "not implemented yet" );
+
+        for( int i = 0; i < size; ++i ) {
+            if ( getValueFromPosition( i ).equals( value ) )
+                return true;
+        }
+
+        return false;
+        
     }
     
     public Set<K> keySet() {
+
+        /*
+        //it's a shame we can't use a linked list here.
+        Set<K> result = new TreeSet();
+
+        for( int i = 0; i < size; ++i ) {
+            result.add( (K)key_type_handler.toValue( getKeyFromPosition( i ) ) );
+        }
+
+        return result;
+        */
         throw new RuntimeException( "not implemented yet" );
+        
     }
 
     public Collection<V> values() {
+
+        /*
+        //it's a shame we can't use a linked list here.
+        Set<V> result = new TreeSet();
+
+        for( int i = 0; i < size; ++i ) {
+            result.add( (V)getValueFromPosition( i ) );
+        }
+
+        return result;
+        */
         throw new RuntimeException( "not implemented yet" );
+
     }
 
     public Set<Map.Entry<K, V>> entrySet() {
+
+        /*
+        Set<Map.Entry<K, V>> result = new TreeSet();
+        */
         throw new RuntimeException( "not implemented yet" );
     }
     

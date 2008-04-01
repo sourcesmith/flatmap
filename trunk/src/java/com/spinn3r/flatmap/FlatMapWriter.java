@@ -92,6 +92,8 @@ public class FlatMapWriter {
         if ( o instanceof Long )
             return TYPE_LONG;
 
+        //FIXME: needs other types.....
+        
         return -1;
         
     }
