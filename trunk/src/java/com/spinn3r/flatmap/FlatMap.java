@@ -18,7 +18,7 @@ import static com.spinn3r.flatmap.FlatMapWriter.*;
  * around this problem by simply storing a DataPointer object in as the value
  * and adding this as an indirection to the underlying value.
  */
-public class FlatMap<K,V> {
+public class FlatMap<K,V> extends ReadOnlyMap implements Map {
 
     // 4 bytes for header
     // 4 bytes for count of items
@@ -139,7 +139,35 @@ public class FlatMap<K,V> {
         
     }
 
-    public String format( byte[] b ) {
+    public public int size() {
+        return size;
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public boolean containsKey(Object key) {
+        return get( key ) != null;
+    }
+
+    public boolean containsValue(Object value) {
+        throw new RuntimeException( "not implemented yet" );
+    }
+    
+    public Set<K> keySet() {
+        throw new RuntimeException( "not implemented yet" );
+    }
+
+    public Collection<V> values() {
+        throw new RuntimeException( "not implemented yet" );
+    }
+
+    public Set<Map.Entry<K, V>> entrySet() {
+        throw new RuntimeException( "not implemented yet" );
+    }
+    
+    private String format( byte[] b ) {
 
         String v = "";
         for( int i = 0; i < b.length; ++i ) {
