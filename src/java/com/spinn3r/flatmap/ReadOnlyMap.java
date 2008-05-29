@@ -18,7 +18,7 @@ public abstract class ReadOnlyMap<K,V> {
         throw new RuntimeException( "Read only map" );
     }
 
-    public V remove(Object key) {
+    public V remove(K key) {
         throw new RuntimeException( "Read only map" );
     }
 
