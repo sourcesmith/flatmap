@@ -8,6 +8,7 @@ import java.nio.*;
 import java.nio.channels.*;
 
 import static com.spinn3r.flatmap.FlatMapWriter.*;
+import static com.spinn3r.flatmap.TypeManager.*;
 
 /**
  *
@@ -18,7 +19,13 @@ import static com.spinn3r.flatmap.FlatMapWriter.*;
  * around this problem by simply storing a DataPointer object in as the value
  * and adding this as an indirection to the underlying value.
  */
-public class FlatMap<K,V> extends ReadOnlyMap {
+public class FlatMap<K,V> extends ReadOnlyMap<K,V> {
+    //implements Map<K,V> {
+
+    /**
+     * Use the first four bytes to denote the file version.
+     */
+    public static final byte[] MAGIC = "FM01".getBytes();
 
     // 4 bytes for header
     // 4 bytes for count of items
@@ -58,8 +65,6 @@ public class FlatMap<K,V> extends ReadOnlyMap {
         // force this buffer to load so that it doesn't load lazily.
         bbuf.load();
 
-        System.out.println( " FIXME: (debug): " + bbuf.getClass() );
-        
         byte[] magic = new byte[MAGIC.length];
         magic = get( 0, magic.length );
 
@@ -68,8 +73,8 @@ public class FlatMap<K,V> extends ReadOnlyMap {
         key_type    = toInt( get( 8, 4 ) );
         value_type  = toInt( get( 12, 4 ) );
 
-        key_type_handler    = getTypeHandler( key_type );
-        value_type_handler  = getTypeHandler( value_type );
+        key_type_handler    = lookupTypeHandler( key_type );
+        value_type_handler  = lookupTypeHandler( value_type );
         
     }
 
@@ -127,12 +132,15 @@ public class FlatMap<K,V> extends ReadOnlyMap {
             
     	    int cmp = ByteArrayComparator.compare( midVal, key_data );
             
-    	    if (cmp < 0)
+    	    if (cmp < 0) {
                 low = mid + 1;
-    	    else if (cmp > 0)
+            } else if (cmp > 0) {
                 high = mid - 1;
-    	    else
-                return getValueFromPosition( mid ); // key found
+            } else {
+                // key found
+                return getValueFromPosition( mid ); 
+            }
+            
     	}
 
     	return null;  // key not found
@@ -213,50 +221,7 @@ public class FlatMap<K,V> extends ReadOnlyMap {
         
     }
     
+    //FIXME: hashCode, equals
+    
 }
 
-class ByteArrayComparator implements Comparator {
-
-    private TypeHandler typeHandler;
-    
-    public ByteArrayComparator( TypeHandler typeHandler ) {
-        this.typeHandler = typeHandler;
-    }
-    
-    public int compare( Object o1, Object o2 ) {
-
-        return compare( typeHandler.toByteArray( o1 ),
-                        typeHandler.toByteArray( o2 ) );
-
-    }
-    
-    public static int compare( byte[] b1, byte[] b2 ) {
-
-        if ( b1.length != b2.length )
-            throw new RuntimeException( String.format( "differing lengths: %d vs %d", b1.length, b2.length ) );
-        
-        for( int i = 0; i < b1.length; ++i ) {
-
-            if ( b1[i] < b2[i] )
-                return -1;
-
-            if ( b1[i] > b2[i] )
-                return 1;
-
-            if ( b1[i] == b2[i] ) {
-
-                //we're not done comparing yet.
-                if ( i < b1.length - 1 )
-                    continue;
-
-                return 0;
-                
-            }
-            
-        }
-        
-        throw new RuntimeException();
-        
-    }
-
-}

@@ -5,35 +5,71 @@ import java.nio.*;
 import java.nio.channels.*;
 import java.util.*;
 
+import static com.spinn3r.flatmap.TypeManager.*;
+
 /**
  */
 public class Test {
-
-    //FIXME: test for size
-
-    //FIXME: clean up code.
-    //FIXME: implement Map
-
-    //FIXME: the double and float code won't work because I NEED to figure out
-    //how to sort these values.
-
     
     static int total = 1000;
     static int start = -1000;
     static File file = null;
     static FlatMap<Long, Integer> fmap = null;
+
+    public static void test1() {
+
+        //FIXME: write boiler plate code to test ALL types.
+        
+        ShortTypeHandler shortTypeHandler = new ShortTypeHandler();
+
+        short v = Short.MAX_VALUE;
+        
+        if ( ! shortTypeHandler.toValue( shortTypeHandler.toByteArray( v ) ).equals( new Short( v ) ) ) {
+            throw new RuntimeException();
+        }
+
+    }
+
+    public static void test2() throws Exception {
+
+        //FIXME: test with long and [-100,100]
+        
+        Set<Integer> set = new TreeSet();
+
+        int start = 1;
+        int end   = 100;
+        
+        for( int i = start; i < end; ++i ) {
+            set.add( i );
+        }
+
+        File file = new File( "test.fst" );
+        
+        FlatSetWriter writer = new FlatSetWriter();
+        writer.write( set, file );
+
+        FlatSet fset = new FlatSet( file );
+
+        Iterator it = fset.iterator();
+        while( it.hasNext() ) {
+            System.out.printf( "%s\n", it.next() );
+        }
+
+        for( int i = start; i < end; ++i ) {
+            if ( fset.contains( i ) )
+                throw new Exception( "missing value: " + i );
+        }
+
+    }
     
     public static void main( String[] args ) throws Exception {
 
-        byte b = -13;
-        int v = (int)b;
-
-        System.out.println( " FIXME: (debug): v: " + v );
+        test1();
+        test2();
         
         System.out.printf( "Testing flat map\n" );
 
-        file = new File( "test.fmap" );
-        FileOutputStream fos = new FileOutputStream( file );
+        file = new File( "test.fmp" );
 
         Map<Long, Integer> map = new TreeMap();
 
@@ -42,9 +78,7 @@ public class Test {
         }
 
         FlatMapWriter writer = new FlatMapWriter();
-        writer.write( map, fos );
-        fos.flush();
-        fos.close();
+        writer.write( map, file );
 
         fmap = new FlatMap( Test.file );
 
