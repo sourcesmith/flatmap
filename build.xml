@@ -41,6 +41,10 @@
 
         <mkdir dir="compile/META-INF"/>
 
+        <tstamp>
+          <format property="timestamp" pattern="MM-dd-yyyy hh:mm:ss 'PST'" locale="PST"/>
+        </tstamp>
+
         <manifest file="compile/META-INF/MANIFEST.MF">
           <attribute name="Built-By" value="${user.name}"/>
           <section name="common">
@@ -48,14 +52,14 @@
             <attribute name="Specification-Version"     value="${version}"/>
             <attribute name="Specification-Vendor"      value="${vendor}"/>
             <attribute name="Implementation-Title"      value="${project}"/>
-            <attribute name="Implementation-Version"    value="${version}"/> 
+            <attribute name="Implementation-Version"    value="${version} - ${timestamp}"/> 
             <attribute name="Implementation-Vendor"     value="${vendor}"/>
           </section>
         </manifest>
 
         <jar compress="yes" 
              filesetmanifest="merge"
-             jarfile="target/${project}-${version}.jar">
+             jarfile="target/${project}.jar">
 
             <fileset dir="compile">
 
